@@ -12,14 +12,13 @@ export const matchesRouter = Router();
 const MAX_LIMIT = 100;
 
 matchesRouter.get("/", async (req, res) => {
-  const parsed = listMatchesQuerySchema.safeParse(req.query);
-
   if (!parsed.success) {
     return res.status(400).json({
       error: "Invalid query parameters",
-      details: JSON.stringify(parsed.error),
+      details: parsed.error.issues,
     });
   }
+  const parsed = listMatchesQuerySchema.safeParse(req.query);
 
   const limit = Math.min(parsed.data.limit ?? 50, MAX_LIMIT);
 
@@ -37,13 +36,13 @@ matchesRouter.get("/", async (req, res) => {
 });
 
 matchesRouter.post("/", async (req, res) => {
-  const parsed = createMatchSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({
       error: "Invalid match data",
-      details: parsed.error,
+      details: parsed.error.issues,
     });
   }
+  const parsed = createMatchSchema.safeParse(req.body);
 
   const { startTime, endTime, homeScore, awayScore } = parsed.data;
 
